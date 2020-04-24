@@ -43,7 +43,7 @@ def init_modem_settings():
 	try:
 		analog_modem.open()
 	except:
-		print "Error: Unable to open the Serial Port."
+		print ("Error: Unable to open the Serial Port.")
 		sys.exit()
 
 
@@ -54,34 +54,34 @@ def init_modem_settings():
 
 		# Test Modem connection, using basic AT command.
 		if not exec_AT_cmd("AT"):
-			print "Error: Unable to access the Modem"
+			print ("Error: Unable to access the Modem")
 
 		# reset to factory default.
 		if not exec_AT_cmd("ATZ3"):
-			print "Error: Unable reset to factory default"			
+			print ("Error: Unable reset to factory default")
 			
 		# Display result codes in verbose form 	
 		if not exec_AT_cmd("ATV1"):
-			print "Error: Unable set response in verbose form"	
+			print ("Error: Unable set response in verbose form")
 
 		# Enable Command Echo Mode.
 		if not exec_AT_cmd("ATE1"):
-			print "Error: Failed to enable Command Echo Mode"		
+			print ("Error: Failed to enable Command Echo Mode")
 
 		# Enable formatted caller report.
 		if not exec_AT_cmd("AT+VCID=1"):
-			print "Error: Failed to enable formatted caller report."
+			print ("Error: Failed to enable formatted caller report.")
 
 		# Enable formatted caller report.
 		#if not exec_AT_cmd("AT+FCLASS=8"):
-		#	print "Error: Failed to enable formatted caller report."
+		#	print ("Error: Failed to enable formatted caller report.")
 
 
 		analog_modem.flushInput()
 		analog_modem.flushOutput()
 
 	except:
-		print "Error: unable to Initialize the Modem"
+		print ("Error: unable to Initialize the Modem")
 		sys.exit()
 #=================================================================
 
@@ -101,7 +101,7 @@ def exec_AT_cmd(modem_AT_cmd):
 		modem_response = analog_modem.readline()
 		modem_response = modem_response + analog_modem.readline()
 
-		print modem_response
+		print (modem_response)
 
 		disable_modem_event_listener = False
 
@@ -117,7 +117,7 @@ def exec_AT_cmd(modem_AT_cmd):
 
 	except:
 		disable_modem_event_listener = False
-		print "Error: unable to write AT command to the modem..."
+		print ("Error: unable to write AT command to the modem...")
 		return()
 #=================================================================
 
@@ -158,27 +158,27 @@ def recover_from_error():
 # Play wav file
 #=================================================================
 def play_audio():
-	print "Play Audio Msg - Start"
+	print ("Play Audio Msg - Start")
 
 	# Enter Voice Mode
 	if not exec_AT_cmd("AT+FCLASS=8"):
-		print "Error: Failed to put modem into voice mode."
+		print ("Error: Failed to put modem into voice mode.")
 		return
 
 	# Compression Method and Sampling Rate Specifications
 	# Compression Method: 8-bit linear / Sampling Rate: 8000MHz
 	if not exec_AT_cmd("AT+VSM=128,8000"):
-		print "Error: Failed to set compression method and sampling rate specifications."
+		print ("Error: Failed to set compression method and sampling rate specifications.")
 		return
 
 	# Put modem into TAD Mode
 	if not exec_AT_cmd("AT+VLS=1"):
-		print "Error: Unable put modem into TAD mode."
+		print ("Error: Unable put modem into TAD mode.")
 		return
 
 	# Put modem into TAD Mode
 	if not exec_AT_cmd("AT+VTX"):
-		print "Error: Unable put modem into TAD mode."
+		print ("Error: Unable put modem into TAD mode.")
 		return
 
 	time.sleep(1)
@@ -219,7 +219,7 @@ def play_audio():
 	cmd = "ATH" + "\r"
 	analog_modem.write(cmd.encode())
 
-	print "Play Audio Msg - END"
+	print ("Play Audio Msg - END")
 	return
 #=================================================================
 
@@ -236,34 +236,34 @@ def read_data():
 		if not disable_modem_event_listener:
 			modem_data = analog_modem.readline()
 			if modem_data != "":
-				print modem_data
+				print (modem_data)
 
 				if "b" in modem_data.strip(chr(16)):
-					print "b in modem data"
-					print "b count:"
+					print ("b in modem data")
+					print ("b count:")
 					print ((modem_data.strip(chr(16))).count("b"))
-					print "total length:"
-					print len(modem_data.strip(chr(16)))
-					print modem_data
+					print ("total length:")
+					print (len(modem_data.strip(chr(16))))
+					print (modem_data)
 					
 					if ((modem_data.strip(chr(16))).count("b")) == len(modem_data.strip(chr(16))):
-						print "all Bs in mode data"
+						print ("all Bs in mode data")
 						#Terminate the call
 						if not exec_AT_cmd("ATH"):
-							print "Error: Busy Tone - Failed to terminate the call"
-							print "Trying to revoer the serial port"
+							print ("Error: Busy Tone - Failed to terminate the call")
+							print ("Trying to revoer the serial port")
 							recover_from_error()
 						else:
-							print "Busy Tone: Call Terminated"
+							print ("Busy Tone: Call Terminated")
 
 				if "s" == modem_data.strip(chr(16)):
 					#Terminate the call
 					if not exec_AT_cmd("ATH"):
-						print "Error: Silence - Failed to terminate the call"
-						print "Trying to revoer the serial port"
+						print ("Error: Silence - Failed to terminate the call")
+						print ("Trying to revoer the serial port")
 						recover_from_error()
 					else:
-						print "Silence: Call Terminated"
+						print ("Silence: Call Terminated")
 
 
 				if ("RING" in modem_data) or ("DATE" in modem_data) or ("TIME" in modem_data) or ("NMBR" in modem_data):
@@ -272,7 +272,7 @@ def read_data():
 						ring_count = ring_data.count("RING")
 						if ring_count == 1:
 							pass
-							print modem_data
+							print (modem_data)
 						elif ring_count == RINGS_BEFORE_AUTO_ANSWER:
 							ring_data = ""
 							play_audio()							
@@ -294,7 +294,7 @@ def close_modem_port():
 			analog_modem.close()
 			print ("Serial Port closed...")
 	except:
-		print "Error: Unable to close the Serial Port."
+		print ("Error: Unable to close the Serial Port.")
 		sys.exit()
 #=================================================================
 
